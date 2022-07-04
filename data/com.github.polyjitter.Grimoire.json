@@ -1,0 +1,11 @@
+{
+    "app-id": "com.github.polyjitter.Grimoire",
+    "runtime": "org.gnome.Platform",
+    "version": "42",
+    "sdk": "org.gnome.Sdk",
+    "command": "grimoire",
+    "finish-args": [
+        "--socket=wayland",
+        "--socket=fallback-x11"
+    ]
+}
