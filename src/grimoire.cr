@@ -1,36 +1,42 @@
 require "libadwaita"
+require "gettext"
+require "log"
 
 module Grimoire
-  VERSION = "0.1.0"
+  LOGGER = Log.for("Collision", ARGV[0]? == "--debug" ? Log::Severity::Debug : Log::Severity::Warn)
 
-  app = Adw::Application.new("com.github.polyjitter.Grimoire", Gio::ApplicationFlags::None)
-  count = 0
-
-  app.activate_signal.connect do
-    window = Adw::ApplicationWindow.new(app)
-    window.title = "Grimoire"
-    window.set_default_size(600, 800)
-
-    root = Gtk::Box.new(Gtk::Orientation::Vertical, 0)
-    header = Adw::HeaderBar.new
-    label = Gtk::Label.new
-
-    box = Gtk::Box.new(Gtk::Orientation::Vertical, 0)
-
-    box.halign = Gtk::Align::Center
-    box.valign = Gtk::Align::Center
-    box.hexpand = true
-    box.vexpand = true
-
-    box.append(label)
-    # box.append(button)
-
-    root.append(header)
-    root.append(box)
-
-    window.content = root
-    window.present
+  begin
+    Gettext.setlocale(Gettext::LC::ALL, "")
+    Gettext.bindtextdomain(
+      "com.github.polyjitter.Grimoire",
+      {{
+        env("GRIMOIRE_LOCALE_LOCATION").nil? ? "/usr/share/locale" : env("GRIMOIRE_LOCALE_LOCATION")
+      }}
+    )
+    Gettext.textdomain("com.github.polyjitter.Grimoire")
+  rescue ex
+    LOGGER.debug { ex }
   end
 
-  exit(app.run(ARGV))
+  VERSION = {{read_file("./shard.yml").split("version: ")[1].split("\n")[0]}}
+
+  Gio.register_resource("data/com.github.polyjitter.Grimoire.gresource.xml", "data")
+end
+
+require "./grimoire/views/*"
+
+module Grimoire
+  B_HL = Gtk::Builder.new_from_resource("resources/Grimoire/header_left.ui")
+  B_HR = Gtk::Builder.new_from_resource("resources/Grimoire/header_right.ui")
+  B_HT = Gtk::Builder.new_from_resource("resources/Grimoire/switcher.ui")
+
+  WINDOW_BOX = Gtk::Box.new(Gtk::Orientation::Vertical, 0)
+  HEADERBAR  = Adw::HeaderBar.new
+
+  MENU_BUTTON  = Gtk::Button.cast(B_HR["menuBtn"])
+  HEADER_TITLE = Adw::ViewSwitcherTitle.cast(B_HT["switcher_title"])
+  BOTTOM_TABS  = Adw::ViewSwitcherBar.cast(B_HT["switcher_bar"])
+  STACK        = Adw::ViewStack.cast(B_HT["stack"])
+
+  APP = Adw::Application.new("dev.geopjr.Collision", Gio::ApplicationFlags::None)
 end

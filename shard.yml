@@ -2,17 +2,20 @@ name: Grimoire
 version: 0.1.0
 
 authors:
-    - Adriene Kae <polyjitter@fastmail.com>
+  - Adriene Kae <polyjitter@fastmail.com>
 
 description: |
-    A bewitching interactive fiction player for GNOME.
+  A bewitching interactive fiction player for GNOME.
 
 dependencies:
-    libadwaita:
-        github: GeopJr/libadwaita.cr
+  libadwaita:
+    github: GeopJr/libadwaita.cr
+  gettext:
+    github: GeopJr/gettext.cr
+    version: ~> 1.0.0
 
 license: GPLv3
 
 targets:
-    grimoire:
-        main: src/main.cr
+  grimoire:
+    main: src/main.cr
